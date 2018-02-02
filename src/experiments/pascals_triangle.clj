@@ -1,4 +1,5 @@
-(ns clojure-experiments.pascals-triangle)
+(ns clojure-experiments.pascals-triangle
+  (:require [clojure.string :as str]))
 
 ;;     1
 ;;    1 1
@@ -14,9 +15,15 @@
       :else (+ (node (dec x) (dec y))
                (node x (dec y)))))
 
+(def node-memo (memoize node))
+
 (defn mk-triangle
   [width]
-  (loop [i 0]
-    (when (< i width)
-      (print (node i (dec width)))
-      (recur (inc i)))))
+  (loop [i 0 accum []]
+    (if (< i width)
+      (recur (inc i) (conj accum (node-memo i (dec width))))
+      accum)))
+
+(defn print-triangle
+  [width]  
+  (print (str/join " " (mk-triangle width))))

@@ -1,5 +1,4 @@
-(ns clojure-experiments.coin-flip
-  (:gen-class))
+(ns clojure-experiments.coin-flip)
 
 (def flips [:h :t :t :h :t :h :h :h])
 
@@ -7,10 +6,9 @@
   [cnt head tail]
   (if (empty? tail)
     cnt
-    (do
-      (if (= head (first tail))
-        (count-flips (+ cnt 1) (first tail) (rest tail))
-        (count-flips cnt (first tail) (rest tail))))))
+    (if (= head (first tail))
+      (count-flips (+ cnt 1) (first tail) (rest tail))
+      (count-flips cnt (first tail) (rest tail)))))
 
 (count-flips 0 (first flips) (rest flips))
 
@@ -20,10 +18,9 @@
   (loop [cnt 0, head (first flips), tail (rest flips)]
         (if (empty? tail)
           cnt
-          (do
-            (if (= head (first tail))
-              (recur (+ cnt 1) (first tail) (rest tail))
-              (recur cnt (first tail) (rest tail)))))))
+          (if (= head (first tail))
+            (recur (+ cnt 1) (first tail) (rest tail))
+            (recur cnt (first tail) (rest tail))))))
 
 (count-flips-improved flips)
 
@@ -32,10 +29,9 @@
   (letfn [(counter [cnt head tail]
             (if (empty? tail)              
               cnt
-              (do
-                (if (= head (first tail))
-                  (counter (+ cnt 1) (first tail) (rest tail))
-                  (counter cnt (first tail) (rest tail))))))]
+              (if (= head (first tail))
+                (counter (+ cnt 1) (first tail) (rest tail))
+                (counter cnt (first tail) (rest tail)))))]
     (counter 0 (first flips) (rest flips))))
 
 (count-flips-improved-2 flips)
