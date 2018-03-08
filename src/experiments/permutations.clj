@@ -1,3 +1,14 @@
+;; Unlike math.combinatorics, this is a more naive implementation that
+;; doesn't filter out duplicate items.
+;;
+;; user> (permutations [1 2 3])
+;; ((1 2 3) (1 3 2) (2 3 1) (2 1 3) (3 1 2) (3 2 1))
+;; user> (permutations [1 1 2])
+;; ((1 1 2) (1 2 1) (1 2 1) (1 1 2) (2 1 1) (2 1 1))
+;;
+;; user> (combo/permutations [1 1 2])
+;; ([1 1 2] [1 2 1] [2 1 1])
+
 (ns clojure-experiments.permutations)
 
 (defn rotate
