@@ -78,10 +78,10 @@ Note the two instances of (\w \m).
 
 From here it's some interesting Clojure code, but the algorithm is pretty much done.
 
-** Look at each n of number of seats on a side
-** Ask how many of the permutations contain that n women
-** that count, over the total number of permutations, is the probability of that n
-** we return a map of results
+- Look at each n of number of seats on a side
+- Ask how many of the permutations contain that n women
+- that count, over the total number of permutations, is the probability of that n
+- we return a map of results
 
 We use `reduce' to iterate through values of n.  `filter' and
 `frequencies' do the work of checking each permutation for the
