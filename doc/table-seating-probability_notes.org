@@ -1,0 +1,132 @@
+Table Seating Probability Notes
+
+* Invocation
+We evaluate `calc-probabilities' fn with a list of chars and nils to
+represent women, men, and empty seats.
+
+#+BEGIN_SRC clojure
+
+  (concat (repeat 3 \w)
+	  (repeat 4 \m)
+	  (repeat 1 nil))
+
+  ;; => (\w \w \w \m \m \m \m nil)
+
+#+END_SRC
+
+The threading macro, `->' takes the value returned by evaluating
+`calc-probabilities' and supplies that as an argument to
+`report-probabilities'.  It's just syntactic sugar for less paren
+nesting; it's intended to add a little clarity here.
+
+#+BEGIN_SRC clojure
+
+  (-> (calc-probabilities (concat (repeat 3 \w)
+				  (repeat 4 \m)
+				  (repeat 1 nil)))
+      report-probabilities)
+
+#+END_SRC
+
+* Generating initial "side permutations" 
+
+The first thing `calc-probabilities` does is generate permutations of
+the input, filtering duplicates and lopping off the the tail half of
+each permutation (more on that below).
+
+clojure.math.combinatorics/permutations dedupes, which makes sense as
+we don't care which \w or \m is seated where.
+
+#+BEGIN_SRC clojure
+
+  (combo/permutations [\w \w \m])
+  ;; => ((\w \w \m) (\w \m \w) (\m \w \w))
+
+  ;; as versus
+  (combo/permutations [1 2 3])
+  ;; => ([1 2 3] [1 3 2] [2 1 3] [2 3 1] [3 1 2] [3 2 1])
+
+#+END_SRC
+
+Order matters in permutations: (\w \w \m) is different than (\m \w
+\w).  Given that we only care about one side of the table, it seems
+safe to only look at the first half of each returned permutation.
+Hopefully this is reasonable?
+
+#+BEGIN_SRC clojure
+
+  (map (partial take (/ 3 2))
+       (combo/permutations [\w \w \m]))
+  ;; => ((\w \w) (\w \m) (\m \w))
+
+#+END_SRC
+
+This is a little more interesting when the truncated permutations
+start to show duplicates, post truncation.
+
+Note the two instances of (\w \m).
+
+#+BEGIN_SRC clojure
+
+  (map (partial take (/ 4 2))
+       (combo/permutations [\w \w \m \m]))
+  ;; => ((\w \w) (\w \m) (\w \m) (\m \w) (\m \w) (\m \m))
+
+#+END_SRC
+
+* Calculating the probability of each of these "half" permutations
+
+From here it's some interesting Clojure code, but the algorithm is pretty much done.
+
+** Look at each n of number of seats on a side
+** Ask how many of the permutations contain that n women
+** that count, over the total number of permutations, is the probability of that n
+** we return a map of results
+
+We use `reduce' to iterate through values of n.  `filter' and
+`frequencies' do the work of checking each permutation for the
+required number of seated women.
+
+
+#+BEGIN_SRC clojure
+
+  (reduce (fn [accum n]
+	    (let [cnt (count (filter #(= n (get (frequencies %) \w)) perms))]
+	      (assoc accum n (float (/ cnt total)))))
+	  {}
+	  (range (-> (first perms) count inc)))
+
+#+END_SRC
+
+All together now!
+
+#+BEGIN_SRC clojure
+
+  ;; The simple example we've been using
+  (calc-probabilities [\w \w \m \m])
+  ;; => {0 0.0, 1 0.6666667, 2 0.16666667}
+
+
+  ;; The test case we were first interesting in
+  (calc-probabilities (concat (repeat 3 \w)
+			      (repeat 4 \m)
+			      (repeat 1 nil)))
+  ;; => {0 0.0, 1 0.42857143, 2 0.42857143, 3 0.071428575, 4 0.0}
+
+#+END_SRC
+
+* Output formatting
+
+Nothing much
+
+#+BEGIN_SRC clojure
+
+  (report-probabilities {0 0.0, 1 0.42857143, 2 0.42857143, 3 0.071428575, 4 0.0})
+
+  ;; 0.000 probability of 0 women on one side
+  ;; 0.429 probability of 1 women on one side
+  ;; 0.429 probability of 2 women on one side
+  ;; 0.071 probability of 3 women on one side
+  ;; 0.000 probability of 4 women on one side
+
+#+END_SRC
