@@ -16,27 +16,42 @@
   [id coll]
   (let [perms (calc-side-permutations coll)
         total (count perms)]
-    (reduce (fn [accum n]
-              (let [cnt (count (filter (fn [p]
-                                         (= (get (frequencies p) id) n))
-                                       perms))]
-                (assoc accum n (float (/ cnt total)))))
-            {}
-            (range (-> (first perms) count inc)))))
+    (->>
+     (frequencies (map (fn [p]
+                         (get (frequencies p) id)) perms))
+     (reduce-kv (fn [m n cnt]
+                  (assoc m n (float (/ cnt total))))
+                {}))))
 
 (defn report-probabilities
   [m]
-  (doseq [n (keys m)]
+  (doseq [n (-> (keys m) sort reverse)]
     (println (format "%.3f probability of %d on one side" (get m n) n))))
 
+
+;;
+;; Examples
+;;
 (-> (calc-probabilities \w (concat (repeat 3 \w)
                                    (repeat 3 \m)
                                    (repeat 1 \o)
                                    (repeat 1 nil)))
     report-probabilities)
 
-;; 0.000 probability of 0 on one side
+;; 0.071 probability of null on one side
 ;; 0.429 probability of 1 on one side
 ;; 0.429 probability of 2 on one side
 ;; 0.071 probability of 3 on one side
-;; 0.000 probability of 4 on one side
+
+
+(-> (calc-probabilities \w (concat (repeat 4 \w)
+                                   (repeat 3 \m)
+                                   (repeat 1 \o)
+                                   (repeat 2 nil)))
+    report-probabilities)
+
+;; 0.024 probability of null on one side
+;; 0.238 probability of 1 on one side
+;; 0.476 probability of 2 on one side
+;; 0.238 probability of 3 on one side
+;; 0.024 probability of 4 on one side
