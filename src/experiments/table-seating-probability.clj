@@ -32,7 +32,7 @@
 ;;
 ;; Examples
 ;;
-(-> (calc-probabilities \w (concat (repeat 3 \w)
+(-> (calc-probabilities \f (concat (repeat 3 \f)
                                    (repeat 3 \m)
                                    (repeat 1 \o)
                                    (repeat 1 nil)))
@@ -44,7 +44,7 @@
 ;; 0.071 probability of 3 on one side
 
 
-(-> (calc-probabilities \w (concat (repeat 4 \w)
+(-> (calc-probabilities \f (concat (repeat 4 \f)
                                    (repeat 3 \m)
                                    (repeat 1 \o)
                                    (repeat 2 nil)))
