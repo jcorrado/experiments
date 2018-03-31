@@ -1,5 +1,5 @@
-;; Walking with Bec, this morning, she shared the observation that her
-;; colleagues seam to self-sort, on sides of a conference table, by
+;; Walking with Bec, this morning, she shared the observation that
+;; people seem to self-sort, on sides of a conference table, by
 ;; gender.  What is the probability of such orderings?
 
 (ns clojure-experiments.table-seating-probability
@@ -34,7 +34,7 @@
 ;;
 (-> (calc-probabilities \f (concat (repeat 3 \f)
                                    (repeat 3 \m)
-                                   (repeat 1 \o)
+                                   (repeat 1 \x)
                                    (repeat 1 nil)))
     report-probabilities)
 
@@ -46,7 +46,7 @@
 
 (-> (calc-probabilities \f (concat (repeat 4 \f)
                                    (repeat 3 \m)
-                                   (repeat 1 \o)
+                                   (repeat 1 \x)
                                    (repeat 2 nil)))
     report-probabilities)
 
